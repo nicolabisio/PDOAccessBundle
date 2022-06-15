@@ -19,7 +19,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Clalarco\PDOAccessBundle\Doctrine\DBAL\Driver\PDOMdbLib;
+namespace PDOAccess\PDOAccessBundle\Doctrine\DBAL\Driver\PDOMdbLib;
 
 /**
  * The PDO-based Dblib driver.
@@ -53,12 +53,15 @@ class Driver implements \Doctrine\DBAL\Driver {
 	}
 
 	public function getDatabasePlatform() {
-		return new \Doctrine\DBAL\Platforms\MsSqlPlatform();
+		return new \Doctrine\DBAL\Platforms\SQLServerPlatform();
 		//return new \Doctrine\DBAL\Platforms\SQLServer2005Platform();
 	}
 
-	public function getSchemaManager(\Doctrine\DBAL\Connection $conn) {
-		return new \Doctrine\DBAL\Schema\MsSqlSchemaManager($conn);
+	public function getSchemaManager(\Doctrine\DBAL\Connection $conn, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    {
+        assert($platform instanceof AbstractMySQLPlatform);
+
+		return new \Doctrine\DBAL\Schema\MsSqlSchemaManager($conn,$platform);
 		//return new \Doctrine\DBAL\Schema\SQLServerSchemaManager($conn);
 	}
 
@@ -70,4 +73,9 @@ class Driver implements \Doctrine\DBAL\Driver {
 		$params = $conn->getParams();
 		return $params['dbname'];
 	}
+
+	public function getExceptionConverter(): \Doctrine\DBAL\Driver\API\ExceptionConverter
+    {
+        return new \Doctrine\DBAL\Driver\API\MySQL\ExceptionConverter();
+    }
 }
